@@ -1,0 +1,40 @@
+# Demo for setting up a QGIS image and being able to access it
+# via guacamole on a local browser
+
+version: "3.8"
+
+services:
+
+  qgis-desktop:
+    image: ricardogsilva/qgis-hosted-desktop:0.1.0
+    ports:
+      - "3389:3389"
+
+  qgis-db:
+    image: postgis/postgis:12-3.0-alpine
+    environment:
+      POSTGRES_USER: gisdb
+      POSTGRES_PASSWORD: gisdb
+      PG_DATA: /var/lib/postgresql/data/pgdata
+
+  guacamole-client:
+    image: guacamole/guacamole:1.2.0
+    ports:
+    - target: 8080
+      published: 8080
+    environment:
+      GUACD_HOSTNAME: guacd
+      POSTGRES_HOSTNAME: guacamole-db
+      POSTGRES_DATABASE: guaca
+      POSTGRES_USER: guaca
+      POSTGRES_PASSWORD: guaca
+
+  guacd:
+    image: guacamole/guacd:1.2.0
+
+  guacamole-db:
+    image: ricardogsilva/guacamole-postgres:0.1.0
+    environment:
+      POSTGRES_USER: guaca
+      POSTGRES_PASSWORD: guaca
+      PG_DATA: /var/lib/postgresql/data/pgdata
